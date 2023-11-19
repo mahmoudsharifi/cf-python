@@ -31,15 +31,12 @@ class Recipe(object):
         
     #add any amount of ingredients then add them to all_ingredients list
     def add_ingredients(self, *args):
-        self.ingredients = args
+        self.ingredients = list(args)
         self.update_all_ingredients()
     
     #get the ingredients of a recipe to be displayed in view_recipe.
     def get_ingredients(self):
-        print("ingredients for this recipe")
-        print("-"*20)
-        for ingredient in self.ingredients:
-            print('-', str(ingredient))
+        return self.ingredients
          
     # when an ingredient is added, it will also be added to all_ingredients list
     def update_all_ingredients(self):
@@ -57,44 +54,35 @@ class Recipe(object):
         
     # set the difficulty of the recipe after calc_difficulty adds the cooking_time and ingredients
     def get_difficulty(self):
-        difficulty = self.calc_difficulty(self.cooking_time,self.ingredients)
-        self.difficulty = difficulty
+        if self.difficulty != '':
+            difficulty = self.calc_difficulty()
+            self.difficulty = difficulty
         output = "Difficulty level: " + str(self.difficulty)
         return output
         
     # determines the difficulty by ingredients and cooking_time 
-    def calc_difficulty(self, cooking_time, ingredients):
-        if cooking_time < 10 and len(ingredients) <= 4:
+    def calc_difficulty(self):
+        if self.cooking_time < 10 and len(self.ingredients) <= 4:
             difficulty_level = 'Easy'
-        elif cooking_time < 10 and len(ingredients) >= 4:
+        elif self.cooking_time < 10 and len(self.ingredients) >= 4:
             difficulty_level = 'Medium'
-        elif cooking_time >= 10 and len(ingredients) < 4:
+        elif self.cooking_time >= 10 and len(self.ingredients) < 4:
             difficulty_level = 'Intermediate'
-        elif cooking_time >= 10 and len(ingredients) >= 4:
+        elif self.cooking_time >= 10 and len(self.ingredients) >= 4:
             difficulty_level = 'Hard'
         return difficulty_level
     
     # check if the ingredient is in the ingredients
     def search_ingredient(self, ingredient, ingredients):
-
-        if ingredient in ingredients:
-            
-            return True
-        else:
-            
-            return False 
+        return ingredient in ingredients
             
     # search the recipes_list by ingredient to display the recipes with that ingredient
     def recipe_search(self, recipes_list, ingredient):
         data = recipes_list
         search_term = ingredient 
-        
-        for recipe in data:
-            
+        for recipe in data:  
             if self.search_ingredient(search_term, recipe.ingredients):
-                print(recipe)
-            else:
-                return False
+                print(" - ",recipe.name)
             
     
     #view the attributes of a recipe
@@ -102,7 +90,11 @@ class Recipe(object):
         print('Name: ' + str(self.name))
         print('Cooking time(minutes): ' + str(self.cooking_time))
         print('Difficulty: ', str(self.difficulty))
-        self.get_ingredients()
+        ingredients = self.get_ingredients()
+        output = ''
+        for i in ingredients:
+            output += str(i) + ', '
+        print(output[:len(output)-2])            
         print('-'*20)
     
 recipes_list = []
