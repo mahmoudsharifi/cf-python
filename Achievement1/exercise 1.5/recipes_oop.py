@@ -54,23 +54,20 @@ class Recipe(object):
         
     # set the difficulty of the recipe after calc_difficulty adds the cooking_time and ingredients
     def get_difficulty(self):
-        if self.difficulty != '':
-            difficulty = self.calc_difficulty()
-            self.difficulty = difficulty
-        output = "Difficulty level: " + str(self.difficulty)
-        return output
+        if self.difficulty == '':
+            self.calc_difficulty()
+        return self.difficulty
         
     # determines the difficulty by ingredients and cooking_time 
     def calc_difficulty(self):
         if self.cooking_time < 10 and len(self.ingredients) <= 4:
-            difficulty_level = 'Easy'
+            self.difficulty = 'Easy'
         elif self.cooking_time < 10 and len(self.ingredients) >= 4:
-            difficulty_level = 'Medium'
+            self.difficulty = 'Medium'
         elif self.cooking_time >= 10 and len(self.ingredients) < 4:
-            difficulty_level = 'Intermediate'
+            self.difficulty = 'Intermediate'
         elif self.cooking_time >= 10 and len(self.ingredients) >= 4:
-            difficulty_level = 'Hard'
-        return difficulty_level
+            self.difficulty = 'Hard'
     
     # check if the ingredient is in the ingredients
     def search_ingredient(self, ingredient, ingredients):
