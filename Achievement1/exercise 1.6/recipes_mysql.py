@@ -61,11 +61,11 @@ def create_recipe(conn, cursor):
     
     cooking_time = int(input("enter the time it will take to make - "))
     
-    ingredients = input("enter the ingredients for the recipe - ")
+    ingredients = input("enter the ingredients for the recipe (separated by a comma)")
+    recipe_ingredients = ingredients.split(',') 
+    recipe_ingredients.sort()
     
-    recipe_ingredients.append(ingredients)
-    
-    difficulty = calc_difficulty(cooking_time, ingredients)
+    difficulty = calc_difficulty(cooking_time, recipe_ingredients)
     
     #turn the list into a string to store in mysql
     recipe_ingredients_str = ", ".join(recipe_ingredients)
@@ -82,7 +82,7 @@ def create_recipe(conn, cursor):
 
 # this method will take the cooking_time and ingredients and calculate the difficulty
 def calc_difficulty( cooking_time, recipe_ingredients):
-    
+    difficulty_level = None
     if cooking_time < 10 and len(recipe_ingredients) <= 4:
         difficulty_level = 'Easy'
     elif cooking_time < 10 and len(recipe_ingredients) >= 4:
@@ -105,7 +105,7 @@ def search_recipe(conn, cursor):
     
     cursor.execute("SELECT ingredients FROM Recipes")
     
-    results = cursor.fetchall();
+    results = cursor.fetchall()
     
     #loop throught the recipes ingreidents and apend them to the all_ingredients list
     for recipe_ingredients_list in results:
