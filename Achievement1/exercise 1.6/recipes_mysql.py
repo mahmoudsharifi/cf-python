@@ -9,10 +9,10 @@ conn = mysql.connector.connect(
 cursor = conn.cursor()
 
 # create a data base named task_database
-cursor.execute("CREATE DATABASE IF NOT EXISTS task_database")
+cursor.execute("CREATE DATABASE IF NOT EXISTS task_database;")
 
 #select the database to use
-cursor.execute("USE task_database")
+cursor.execute("USE task_database;")
 
 #create a table called Recipes with the following columns
 cursor.execute('''CREATE TABLE IF NOT EXIST Recipes(
@@ -21,7 +21,7 @@ cursor.execute('''CREATE TABLE IF NOT EXIST Recipes(
     ingredients    VARCHAR(255),
     cooking_time   INT,
     difficulty     VARCHAR(20) 
-    )''')
+    );''')
 
 #this is the main menu for users to pick the action they want to do and execute that method
 def main_menu(conn, cursor):
@@ -71,7 +71,7 @@ def create_recipe(conn, cursor):
     recipe_ingredients_str = ", ".join(recipe_ingredients)
     
     # adding the inputted info into the database
-    sql = 'INSERT INTO Recipes (name, ingredients, cooking_time, difficulty) VALUES (%s, %s, %s, %s)'
+    sql = 'INSERT INTO Recipes (name, ingredients, cooking_time, difficulty) VALUES (%s, %s, %s, %s);'
     
     val = (name, recipe_ingredients_str, cooking_time, difficulty)
     
@@ -103,7 +103,7 @@ def search_recipe(conn, cursor):
     #we get the ingredients from the database and store them into the all_ingredients list
     all_ingredients = []
     
-    cursor.execute("SELECT ingredients FROM Recipes")
+    cursor.execute("SELECT ingredients FROM Recipes;")
     
     results = cursor.fetchall()
     
@@ -187,16 +187,16 @@ def update_recipe(conn, cursor):
         
     # use calc difficulty to update the recipe and then set the new difficulty to the chosen recipe(args ingredients and cooking_time)
         updated_difficulty = calc_difficulty(cooking_time, recipe_ingredients)
-        cursor.execute("UPDATE Recipes SET difficulty = %s WHERE id = %s ", (updated_difficulty, recipe_id_for_update))
+        cursor.execute("UPDATE Recipes SET difficulty = %s WHERE id = %s ;", (updated_difficulty, recipe_id_for_update))
         print(column_for_update, " has been updated")
     
     #ingredients will let the user set a new list of ingredients 
     elif column_for_update == "ingredients":
     
-        cursor.execute("UPDATE Recipes SET ingredients = %s WHERE id = %s", (updated_value, recipe_id_for_update))
+        cursor.execute("UPDATE Recipes SET ingredients = %s WHERE id = %s;", (updated_value, recipe_id_for_update))
         
     #get the recipe to update the difficulty
-        cursor.execute("SELECT * FROM Recipes WHERE id = %s", (recipe_id_for_update, ))
+        cursor.execute("SELECT * FROM Recipes WHERE id = %s;", (recipe_id_for_update, ))
         
         result_recipe_for_update = cursor.fetchall()
         
@@ -206,7 +206,7 @@ def update_recipe(conn, cursor):
     # use calc difficulty to update the recipe and then set the new difficulty to the chosen recipe(args ingredients and cooking_time)
         updated_difficulty = calc_difficulty(cooking_time, recipe_ingredients)
         
-        cursor.execute("UPDATE Recipes SET difficulty = %s WHERE id = %s", (updated_difficulty, recipe_id_for_update))
+        cursor.execute("UPDATE Recipes SET difficulty = %s WHERE id = %s;", (updated_difficulty, recipe_id_for_update))
         print(column_for_update, " has been updated")
         
     conn.commit()
@@ -216,7 +216,7 @@ def delete_recipe(conn, cursor):
     
     recipe_to_delete = int(input("\n which recipe would you like to delete? - "))
         
-    cursor.execute("DELETE FROM Recipes where id = (%s)", (recipe_to_delete, ))
+    cursor.execute("DELETE FROM Recipes where id = (%s);", (recipe_to_delete, ))
     
     conn.commit()
     print("recipe has been deleted")
@@ -226,7 +226,7 @@ def view_all_recipes(conn,cursor):
     print("\n here is a list of all the recipes ")
     print("-"*15)
     
-    cursor.execute(" SELECT * FROM Recipes")
+    cursor.execute(" SELECT * FROM Recipes;")
     results = cursor.fetchall()
     
     for row in results:
