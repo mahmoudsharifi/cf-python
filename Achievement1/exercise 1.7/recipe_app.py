@@ -26,26 +26,34 @@ class Recipe(Base):
       "\nDifficulty: " + str(self.difficulty) + \
       "\nIngredients: " + str(self.ingredients)
       return output
+    
+    # this method will take the cooking_time and ingredients and calculate the difficulty
+    def calc_difficulty(self):
+        if (self.cooking_time < 10) and (len(self.ingredients) <= 4):
+            self.difficulty = 'Easy'
+        elif (self.cooking_time < 10) and (len(self.ingredients) >= 4):
+            self.difficulty = 'Medium'
+        elif (self.cooking_time >= 10) and (len(self.ingredients) < 4):
+            self.difficulty = 'Intermediate'
+        elif (self.cooking_time >= 10) and (len(self.ingredients) >= 4):
+            self.difficulty = 'Hard'
+        else:
+            print("sorry there was an error. please try again.")
+
+    def return_ingredients_as_list(self):
+        # no ingredients return empty list
+        if len(self.ingredients == 0):
+            return []
+        else:
+            return self.ingredients.split(", ")
 
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# this method will take the cooking_time and ingredients and calculate the difficulty
-def calc_difficulty(cooking_time, recipe_ingredients):
-    
-    if (cooking_time < 10) and (len(recipe_ingredients) <= 4):
-        difficulty_level = 'Easy'
-    elif (cooking_time < 10) and (len(recipe_ingredients) >= 4):
-        difficulty_level = 'Medium'
-    elif (cooking_time >= 10) and (len(recipe_ingredients) < 4):
-        difficulty_level = 'Intermediate'
-    elif (cooking_time >= 10) and (len(recipe_ingredients) >= 4):
-        difficulty_level = 'Hard'
-    else:
-        print("sorry there was an error. please try again.")
-    return difficulty_level
+
+
         
 #create a new recipe and set up variable to check if the data is matching the mySQL database
 def create_recipe():
@@ -60,9 +68,7 @@ def create_recipe():
         name = input(" what is the name for this Recipe? - ")
         
         if len(name) < 50:
-            
             name_input_value = True
-            
         else:
             
             print("please enter a name with less than 50 characters")
@@ -94,15 +100,16 @@ def create_recipe():
     recipe_ingredients_str = ','.join(recipe_ingredients)
     print(recipe_ingredients_str)
         
-    difficulty = calc_difficulty(int(cooking_time), recipe_ingredients)
+    # difficulty = calc_difficulty(int(cooking_time), recipe_ingredients)
     
     #create an object to add the database 
     recipe_entry = Recipe(
         name = name,
         cooking_time = int(cooking_time),
         ingredients = recipe_ingredients_str,
-        difficulty = difficulty
+        # difficulty = difficulty
     )
+    recipe_entry.calc_difficulty()
     
     session.add(recipe_entry)
     session.commit()
@@ -151,15 +158,16 @@ def search_by_ingredients():
                 all_ingredients.extend(recipe_ingedients_split)
     
     #create a list of dictionaries with key - ingredients to enumerate 
-        all_ingredients = list(dict.fromkeys(all_ingredients))
+        # all_ingredients = list(dict.fromkeys(all_ingredients))
+        all_ingredients = list(set(all_ingredients))
         all_ingredients_list = list(enumerate(all_ingredients))
            
         print("\nlist of all ingredients - ")
         print("-"*15)
            
-        for index,tup in enumerate(all_ingredients_list):
+        for index,tup in all_ingredients_list:
             
-            print(str(tup[0]+1) + "." + tup[1])
+            print(str(index+1) + "." + tup)
                
         try:
     #user is able to search for 1 or more ingredients
@@ -241,18 +249,35 @@ def edit_recipes():
             print(recipe_to_edit)       
             
             column_for_update = int(input("\nEnter the data you want to update among 1. name, 2. cooking time 3. ingredients -  "))
-            
+            name_input_value = False
+            cooking_time_input_value = False
+            ingredients_quantity = False
             updated_value = input("please enter the new value for your recipe - ")
             
             #after the user picks a Recipe ID, column to update, and new value, use if,elif to update the recipe
             if column_for_update == 1:
-                session.query(Recipe).filter(Recipe.id == recipe_id_to_edit).update({Recipe.name: updated_value})
-                print(column_for_update, " has been updated")
+                while name_input_value == False:
+                    if len(updated_value) < 50:
+                        name_input_value = True
+                        # session.query(Recipe).filter(Recipe.id == recipe_id_to_edit).update({Recipe.name: updated_value})
+                        recipe_to_edit.name = updated_value
+                        print(column_for_update, " has been updated")
+                    else:
+                        print("please enter a name with less than 50 characters")
+                        updated_value = input("please enter the new name for your recipe - ")
+                
                 
                 
             elif column_for_update == 2:
-                session.query(Recipe).filter(Recipe.id == recipe_id_to_edit).update({Recipe.cooking_time: updated_value})
-                print(column_for_update, " has been updated")
+                while cooking_time_input_value == False:
+                    if len(updated_value) < 50:
+                        cooking_time_input_value = True
+                        # session.query(Recipe).filter(Recipe.id == recipe_id_to_edit).update({Recipe.cooking_time: updated_value})
+                        recipe_to_edit.cooking_time = updated_value
+                        print(column_for_update, " has been updated")
+                    else:
+                        print("please enter a name with less than 50 characters")
+                        updated_value = input("please enter the new cooking time for your recipe - ")
                 
                 
             elif column_for_update == 3:
@@ -263,9 +288,9 @@ def edit_recipes():
                 print("\noops, something happened. please try again")
             
             #update the difficulty
-            update_difficulty = calc_difficulty(int(recipe_to_edit.cooking_time), recipe_to_edit.ingredients)
+            recipe_to_edit.calc_difficulty()
             
-            recipe_to_edit.difficulty = update_difficulty
+            # recipe_to_edit.difficulty = update_difficulty
             session.commit()
             print("Your Recipe has been updated")
             
@@ -338,5 +363,7 @@ def main_menu():
             print("bye bye!")
         else:
             print("please enter a valid number")
+
+main_menu()
             
             
