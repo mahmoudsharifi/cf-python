@@ -42,7 +42,7 @@ class Recipe(Base):
 
     def return_ingredients_as_list(self):
         # no ingredients return empty list
-        if len(self.ingredients == 0):
+        if len(self.ingredients) == 0:
             return []
         else:
             return self.ingredients.split(", ")
