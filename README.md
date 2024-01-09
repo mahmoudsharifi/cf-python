@@ -1,2 +1,2 @@
 # cf-python
-For career foundry python web development
+For CareeFoundry Python Web Development
